@@ -14,11 +14,22 @@ namespace ChatServer
 {
     public partial class MainForm : Form
     {
+        ChatServer mainServer;
         private delegate void UpdateStatusCallback(string strMessage);
 
         public MainForm()
         {
+            Application.ApplicationExit += new EventHandler(OnApplicationExit);
             InitializeComponent();
+        }
+
+        // Обработчик события для выхода из приложения
+        public void OnApplicationExit(object sender, EventArgs e)
+        {
+            if(mainServer!=null)
+            {
+                mainServer.CloseServer();
+            }
         }
 
         private void btnListen_Click(object sender, EventArgs e)
@@ -28,7 +39,7 @@ namespace ChatServer
                 // Преобразуем значение из txtIp в объект типа IPAddress
                 IPAddress ipAddr = IPAddress.Parse(txtIp.Text);
                 // Создается новый экземпляр объекта ChatServer
-                ChatServer mainServer = new ChatServer(ipAddr);
+                mainServer = new ChatServer(ipAddr);
                 // Подключаем обработчик события ChatMessageHandler к mainServer_ChatMessageHandler
                 ChatServer.ChatMessageHandler += new ChatMessageEventHandler(mainServer_ChatMessageHandler);
                 // Начинается прослушивание соединений 
